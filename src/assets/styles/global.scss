@@ -1,6 +1,3 @@
 @import "./reset";
-$ratio: 375/10; //定义变量ratio
-
-@function px2rem($px){
-  @return $px / $ratio + rem;
-}
+@import "./mixin";
+@import "./transition";

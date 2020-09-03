@@ -1,23 +1,12 @@
 <template>
   <div id="app">
-    <span class="text">ABCDEFG</span>
     <router-view/>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 
-export default {
-  computed: {
-    ...mapGetters(['test'])
-  },
-  mounted () {
-    this.$store.dispatch('setTest', 9).then(() => {
-      console.log(this.test)
-    })
-  }
-}
+export default {}
 // 当DOM加载完毕时，设置html元素的fontSize
 document.addEventListener('DOMContentLoaded', () => {
   const html = document.querySelector('html')
@@ -31,7 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
   /*注意这里要加lang="scss",否则会无法识别px2rem()*/
   /*@import "./assets/styles/global.scss";*/
   /*若没有在main.js中引入global.scss，则要加入上一行*/
-  .text {
-    font-size: px2rem(20);
+
+  #app {
+    width: 100%;
+    height: 100%;
   }
+
 </style>

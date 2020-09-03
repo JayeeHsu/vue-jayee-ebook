@@ -1,0 +1,35 @@
+$ratio: 375/10; //定义变量ratio
+
+@function px2rem($px){
+  @return $px / $ratio + rem;
+}
+
+@mixin center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin left {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+@mixin right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+@mixin top {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+@mixin bottom {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}

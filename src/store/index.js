@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import book from './modules/book'
-import getters from './getters'
+import bookStateGetters from './bookStateGetters'
+import bookActions from './bookActions'
 
 Vue.use(Vuex)
 
@@ -10,10 +11,9 @@ export default new Vuex.Store({
   },
   mutations: {
   },
-  actions: {
-  },
+  actions: bookActions,
   modules: {
     book
   },
-  getters
+  getters: bookStateGetters
 })
