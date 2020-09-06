@@ -3,6 +3,7 @@
 // import { ebookMixin } from '../../utils/mixin'
 // export defoult{mixins: [ebookMixin]}
 import { mapGetters, mapActions } from 'vuex'
+import { addCss, themeList, removeAllCss } from './book'
 
 export const ebookMixin = {
   computed: {
@@ -10,15 +11,74 @@ export const ebookMixin = {
       'fileName',
       'menuVisible',
       'settingVisible',
-      'defaultFontSize'
-    ])
+      'defaultFontSize',
+      'defaultFontFamily',
+      'fontFamilyVisible',
+      'defaultTheme',
+      'bookAvailable',
+      'progress',
+      'section',
+      'isPaginating',
+      'currentBook',
+      'navigation',
+      'cover',
+      'metadata',
+      'paginate',
+      'pagelist',
+      'offsetY',
+      'isBookmark',
+      'speakingIconBottom'
+    ]),
+    themeList () {
+      return themeList(this)
+    }
   },
   methods: {
     ...mapActions([
       'setMenuVisible',
       'setFileName',
       'setSettingVisible',
-      'setDefaultFontSize'
-    ])
+      'setDefaultFontSize',
+      'setDefaultFontFamily',
+      'setFontFamilyVisible',
+      'setDefaultTheme',
+      'setBookAvailable',
+      'setProgress',
+      'setSection',
+      'setIsPaginating',
+      'setCurrentBook',
+      'setNavigation',
+      'setCover',
+      'setMetadata',
+      'setPaginate',
+      'setPagelist',
+      'setOffsetY',
+      'setIsBookmark',
+      'setSpeakingIconBottom'
+    ]),
+
+    /*
+    * 初始化全局样式 在EbookReader初始化时调用  在EbookSettingTheme修改主题时调用
+    * @method initGlobalStyle
+    */
+    initGlobalStyle () {
+      removeAllCss()
+      switch (this.defaultTheme) {
+        case 'Default':
+          addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_default.css`)
+          break
+        case 'Eye':
+          addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_eye.css`)
+          break
+        case 'Gold':
+          addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_gold.css`)
+          break
+        case 'Night':
+          addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_night.css`)
+          break
+        default:
+          addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_default.css`)
+      }
+    }
   }
 }

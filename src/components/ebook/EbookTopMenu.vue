@@ -26,7 +26,8 @@ export default {
   mixins: [ebookMixin],
   methods: {
     /*
-    * function back 退出当前书籍阅读
+    * 退出当前书籍阅读,返回上级
+    * @method back
     */
     back () {
       console.log('back')
@@ -50,8 +51,8 @@ export default {
     font-size: px2rem(20);
     .left {
       flex: 0 0 px2rem(60);
-      @include center;
-      margin-left: px2rem(5);
+      @include left;
+      margin-left: px2rem(10);
     }
     .right {
       flex: 1;
