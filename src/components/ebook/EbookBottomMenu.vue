@@ -21,6 +21,7 @@
     <ebook-setting-font/>
     <ebook-setting-font-popup/>
     <ebook-setting-theme/>
+    <ebook-setting-progress/>
   </div>
 </template>
 
@@ -29,17 +30,20 @@ import { ebookMixin } from '../../utils/mixin'
 import EbookSettingFont from './EbookSettingFont'
 import EbookSettingFontPopup from './EbookSettingFontPopup'
 import EbookSettingTheme from './EbookSettingTheme'
+import EbookSettingProgress from './EbookSettingProgress'
 
 export default {
   name: 'EbookBottomMenu',
   components: {
     EbookSettingFont,
     EbookSettingFontPopup,
-    EbookSettingTheme
+    EbookSettingTheme,
+    EbookSettingProgress
   },
   mixins: [ebookMixin],
 
   methods: {
+
     /*
     * 显示设置
     * @method showSetting
@@ -73,9 +77,6 @@ export default {
     &.hide-box-shadow {
       box-shadow: none;
 
-    }
-    &.top-border{
-      border-top: solid #ccc px2rem(1);
     }
 
     .icon-wrapper {

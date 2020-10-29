@@ -14,6 +14,7 @@
 <script>
 import { ebookMixin } from '../../utils/mixin'
 import { saveTheme } from '../../utils/localStorage'
+
 export default {
   name: 'EbookSettingTheme',
   mixins: [ebookMixin],
@@ -27,7 +28,9 @@ export default {
     setTheme (index) {
       const theme = this.themeList[index]
       this.setDefaultTheme(theme.name).then(() => {
-        this.currentBook.rendition.themes.select(this.defaultTheme)
+        // 用epubjs的themes.select方法，将样式的name传入，选择对应的样式
+        // 样式的注入(注册)在EbookReader的initTheme中实现
+        this.currentBook.rendition.themes.select(this.defaultTheme) // 因为这里用的是vuex中的值，所以要异步保证顺序是在存入vuex之后执行此步骤
         this.initGlobalStyle()
       })
       saveTheme(this.fileName, theme.name)

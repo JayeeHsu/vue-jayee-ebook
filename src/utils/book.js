@@ -1,3 +1,4 @@
+// 字号数组
 export const FONT_SIZE_LIST = [
   { fontSize: 12 },
   { fontSize: 14 },
@@ -8,6 +9,7 @@ export const FONT_SIZE_LIST = [
   { fontSize: 24 }
 ]
 
+// 字体数组
 export const FONT_FAMILY = [
   { font: 'Default' },
   { font: 'Cabin' },
@@ -16,6 +18,12 @@ export const FONT_FAMILY = [
   { font: 'Tangerine' }
 ]
 
+/*
+* 主题列表
+* @method themeList
+* @param {object} vue vue实例
+* @return {array} 返回主题列表
+*/
 export function themeList (vue) {
   return [
     {
@@ -93,6 +101,11 @@ export function themeList (vue) {
   ]
 }
 
+/*
+* 添加Css文件到head标签中 用于实现全局（除开阅读器外其他部分，阅读器要单独进行CSS注入）主题的更改
+* @method addCss
+* @param {string} href
+*/
 export function addCss (href) {
   const link = document.createElement('link')
   link.setAttribute('rel', 'stylesheet')
@@ -101,6 +114,11 @@ export function addCss (href) {
   document.getElementsByTagName('head')[0].appendChild(link)
 }
 
+/*
+* 移除head标签中的样式link标签 用于实现全局（除开阅读器外其他部分，阅读器要单独进行CSS注入）主题的更改
+* @method removeCss
+* @param {string} href
+*/
 export function removeCss (href) {
   const links = document.getElementsByTagName('link')
   for (let i = links.length; i >= 0; i--) {
@@ -111,9 +129,58 @@ export function removeCss (href) {
   }
 }
 
+/*
+* 移除所有样式文件 用于实现阅读器（除开阅读器外其他部分，阅读器要单独进行CSS注入）主题的更改
+* @method removeAllCss
+* @param {string} href
+*/
 export function removeAllCss () {
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_default.css`)
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_eye.css`)
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_gold.css`)
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_night.css`)
+}
+
+/*
+* 防抖
+* @method debounce
+* @param {function} fn 传入要进行防抖处理的函数
+* @param {number} timeout 防抖定时器的过期时间
+* @return {function} 处理后的执行函数
+*/
+export function debounce (fn, time = 2000) {
+  // console.log('debounce')
+  let timeout = null // 创建一个标记用通过闭包来存放定时器的返回值
+  return function (...args) {
+    // console.log(' return function')
+    clearTimeout(timeout)
+    // 每当用户触发fn的时候把前一个 setTimeout clear 掉
+    timeout = setTimeout(() => {
+      // 创建一个新的 setTimeout
+      // console.log('创建一个新的 setTimeout')
+      fn.apply(this, args)
+      // console.log(' fn.apply(this) ')
+    }, time)
+  }
+}
+
+/*
+* 节流
+* @method throttle
+* @param {function} fn 传入要进行节流处理的函数
+* @param {number} timeout 节流定时器的过期时间
+* @return {function} 处理后的执行函数
+*/
+export function throttle (fn, time) {
+  let canRun = true // 通过闭包保存一个标记
+  return function () {
+    if (!canRun) return // 在函数开头判断标记是否为true，不为true则return
+    canRun = false // 立即设置为false
+    setTimeout(() => { // 将外部传入的函数的执行放在setTimeout中
+      fn.apply(this, arguments)
+      // 最后在setTimeout执行完毕后再把标记设置为true(关键)表示可以执行下一次
+      // 循环了。当定时器没有执行的时候标记永远是false，在开头被return掉
+      canRun = true
+    }, time)
+  }
 }

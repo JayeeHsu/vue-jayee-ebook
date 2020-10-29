@@ -33,3 +33,9 @@ $ratio: 375/10; //定义变量ratio
   justify-content: center;
   align-items: flex-end;
 }
+
+@mixin ellipsis {
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}

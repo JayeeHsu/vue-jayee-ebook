@@ -11,7 +11,7 @@
 }
 
 .slide-up-enter, .slide-up-leave-to {
-  transform: translate3d(0, px2rem(138), 0)
+  transform: translate3d(0, px2rem(138), 0) // 弹出栏90+菜单栏48
 }
 
 .fade-enter, .fade-leave-to {

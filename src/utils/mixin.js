@@ -4,6 +4,7 @@
 // export defoult{mixins: [ebookMixin]}
 import { mapGetters, mapActions } from 'vuex'
 import { addCss, themeList, removeAllCss } from './book'
+import { saveLocation } from './localStorage'
 
 export const ebookMixin = {
   computed: {
@@ -78,6 +79,44 @@ export const ebookMixin = {
           break
         default:
           addCss(`${process.env.VUE_APP_RES_URL}/theme/theme_default.css`)
+      }
+    },
+
+    /*
+     * 刷新当前位置对应的进度条位置
+     * @method refreshLocation
+     */
+    refreshLocation () {
+      // 获取当前的位置
+      const currentLocation = this.currentBook.rendition.currentLocation()
+      // console.log(currentLocation)
+
+      // 本章的开始位置对应的进度值
+      const startCfi = currentLocation.start.cfi
+      const progress = this.currentBook.locations.percentageFromCfi(startCfi)
+      this.setProgress(Math.floor(progress * 100))
+      this.setSection(currentLocation.start.index)
+      saveLocation(this.fileName, startCfi)
+    },
+
+    /*
+    * 展示渲染
+    * @method display
+    * @param {string} target 传入的是个cfi
+    * @param {function} callback 回调函数
+    */
+    display (target, callback) {
+      // 展示,this.rendition.display是epubjs中的方法
+      if (target) {
+        return this.currentBook.rendition.display(target).then(() => {
+          this.refreshLocation()
+          if (callback) callback()
+        })
+      } else {
+        return this.currentBook.rendition.display().then(() => {
+          this.refreshLocation()
+          if (callback) callback()
+        })
       }
     }
   }

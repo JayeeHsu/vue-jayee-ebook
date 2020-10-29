@@ -7,9 +7,9 @@ const book = {
     defaultFontFamily: 'Default',
     fontFamilyVisible: false,
     defaultTheme: 'Default',
-    bookAvailable: false,
+    bookAvailable: false, // 表示分页是否完成的值
     progress: 0,
-    section: 0,
+    section: 0, // 表示章节
     isPaginating: true,
     currentBook: null,
     navigation: null,
@@ -81,7 +81,7 @@ const book = {
 
   },
   actions: {
-    // 以下内容已转移至BookActions.js，方便单独管理
+    // 此部分内容已转移至BookActions.js，方便单独管理
     // setFileName: ({ commit, state }, fileName) => {
     //   return commit('SET_FILE_NAME', fileName)
     //   // 用return则会返回一个Promis对象，方便后续操作

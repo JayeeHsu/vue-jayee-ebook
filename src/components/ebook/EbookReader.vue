@@ -13,7 +13,8 @@ import {
   getFontSize,
   saveFontSize,
   getTheme,
-  saveTheme
+  saveTheme,
+  getLocation
 } from '../../utils/localStorage'
 global.ePub = Epub
 
@@ -37,6 +38,88 @@ export default {
     })
   },
   methods: {
+
+    /*
+    * 初始化阅读器
+    * @method initEpub
+    */
+    initEpub () {
+      // 构造当前书本具体的nginx资源访问地址
+      const baseUrl = `${process.env.VUE_APP_RES_URL}/epub/` // nginx静态资源服务器epub目录地址
+      const url = baseUrl + this.fileName + '.epub' // nginx资源地址+文件名+后缀
+
+      // 调用利用epubjs解析url得到书本信息
+      this.book = new Epub(url)
+      // this.$store.dispatch('setCurrentBook', this.book)
+      this.setCurrentBook(this.book)
+
+      // 初始化阅读器渲染
+      // 此方法在阅读器渲染完成后中还调用了初始化字体，字号，主题，全局样式的方法
+      // 以及添加字体样式文件到阅读器中
+      this.initRendition()
+
+      // 初始化绑定手势事件
+      this.initGesture()
+
+      // ready是epubjs在解析完成后调用的一个钩子函数
+      this.book.ready.then(() => {
+        // 根据页面宽度/375和字体大小/16决定分页字数,默认750
+        // 这个算法有一个缺陷，就是不会计算资源文件（比如图片）在内容中占的位置
+        // 而且有些字（比如标题）是比较大的
+        return this.book.locations.generate(750 * (window.innerWidth / 375) *
+          (getFontSize(this.fileName)) / 16)
+      }).then(localtions => {
+        // console.log(localtions)
+        // 分页完成
+        this.setBookAvailable(true)
+
+        this.refreshLocation() // 刷新当前位置对应的进度条位置
+      }
+      )
+    },
+
+    /*
+    * 初始化阅读器渲染
+    * 此方法在阅读器渲染完成后中还调用了初始化字体，字号，主题，全局样式的方法
+    * 以及添加字体样式文件到阅读器中
+    * @method initRendition
+    */
+    initRendition () {
+      // 将获取的书本渲染并绑定到id为'read'的dom，并且赋给this.rendition
+      this.rendition = this.book.renderTo('read', {
+        width: innerWidth,
+        height: innerHeight,
+        method: 'default' // 设置这个才能在微信中正常的显示
+      })
+
+      const location = getLocation(this.fileName)
+      this.display(location || null, () => {
+        // 初始化字体
+        this.initFontFamily()
+        // 初始化字号
+        this.initFontSize()
+        // 初始化主题
+        this.initTheme()
+        // 初始化全局样式
+        this.initGlobalStyle()
+      }).then(() => { // 阅读器完成渲染后
+
+      })
+
+      // this.rendition.hooks.content阅读器渲染完可以获得资源文件时的钩子函数
+      this.rendition.hooks.content.register(contents => {
+        Promise.all([
+          // 添加字体样式文件到阅读器中
+          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
+          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/cabin.css`),
+          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`),
+          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
+        ]).then(() => {
+
+        })
+      })
+    },
+
     /*
     * 初始化字体
     * @method initFontFamily
@@ -77,56 +160,17 @@ export default {
       }
       this.setDefaultTheme(defaultTheme)
       this.themeList.forEach(theme => {
+        // 利用epubjs的themes.register方法进行样式注入(注册)
         this.rendition.themes.register(theme.name, theme.style)
       })
       this.rendition.themes.select(defaultTheme)
     },
 
     /*
-    * function initEpub 初始化阅读器
+    * 初始化绑定手势事件
+    * @method initGesture
     */
-    initEpub () {
-      // 构造当前书本具体的nginx资源访问地址
-      const baseUrl = `${process.env.VUE_APP_RES_URL}/epub/` // nginx静态资源服务器epub目录地址
-      const url = baseUrl + this.fileName + '.epub' // nginx资源地址+文件名+后缀
-
-      // 调用利用epubjs解析url得到书本信息
-      this.book = new Epub(url)
-      // this.$store.dispatch('setCurrentBook', this.book)
-      this.setCurrentBook(this.book)
-
-      // 将获取的书本渲染并绑定到id为'read'的dom，并且赋给this.rendition
-      this.rendition = this.book.renderTo('read', {
-        width: innerWidth,
-        height: innerHeight,
-        method: 'default' // 设置这个才能在微信中正常的显示
-      })
-
-      // 展示，display是epubjs中的方法
-      this.rendition.display().then(() => { // 阅读器完成渲染后
-        // 初始化字体
-        this.initFontFamily()
-        // 初始化字号
-        this.initFontSize()
-        // 初始化主题
-        this.initTheme()
-        // 初始化全局样式
-        this.initGlobalStyle()
-      })
-
-      // this.rendition.hooks.content阅读器渲染完可以获得资源文件时的钩子函数
-      this.rendition.hooks.content.register(contents => {
-        Promise.all([
-          // 添加字体样式文件到阅读器中
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/cabin.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
-        ]).then(() => {
-
-        })
-      })
-
+    initGesture () {
       // on是epubjs中的方法，绑定事件到iframe中
       // epubjs解析书本后会创建一个iframe在绑定的dom中，具体结构可F12查看，这里不赘述
       // touchstart和touchend表示触摸的开始和结束（手指接触屏幕到离开屏幕）
@@ -156,7 +200,10 @@ export default {
     */
     prevPage () {
       if (this.rendition) { // 如果rendition对象存在
-        this.rendition.prev() // 翻到上一页
+        this.rendition.prev().then(() => {
+          // 刷新当前位置对应的进度条位置
+          this.refreshLocation()
+        }) // 翻到上一页
         this.hideMenu() // 隐藏菜单
       }
     },
@@ -167,7 +214,10 @@ export default {
     */
     nextPage () {
       if (this.rendition) { // 如果rendition对象存在
-        this.rendition.next() // 翻到下一页
+        this.rendition.next().then(() => {
+          // 刷新当前位置对应的进度条位置
+          this.refreshLocation()
+        }) // 翻到下一页
         this.hideMenu() // 隐藏菜单
       }
     },
@@ -177,7 +227,7 @@ export default {
     * @method showTitleAndMenu
     */
     toggleMenu () {
-      // this.$store.dispatch('setMenuVisible', !this.menuVisible)
+      // this.$store.dispatch('setMenuVisible'n, !this.menuVisible)
       if (this.menuVisible) {
         this.setSettingVisible(-1) // 将具体设置栏隐藏
         this.setFontFamilyVisible(false)
@@ -195,6 +245,7 @@ export default {
       this.setSettingVisible(-1) // 隐藏弹出设置栏
       this.setFontFamilyVisible(false) // 隐藏字体设置栏
     }
+
   }
 }
 </script>
