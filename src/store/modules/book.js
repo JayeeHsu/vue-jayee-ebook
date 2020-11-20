@@ -13,7 +13,7 @@ const book = {
     isPaginating: true,
     currentBook: null,
     navigation: null,
-    cover: null,
+    cover: null, // 封面图片的路径
     metadata: null,
     paginate: '',
     pagelist: null,

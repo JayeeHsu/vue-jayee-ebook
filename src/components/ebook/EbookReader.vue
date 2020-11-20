@@ -1,6 +1,13 @@
 <template>
   <div class="ebook-reader">
     <div id="read"></div>
+    <!--蒙板用于实现书签功能： -->
+    <div
+      class="ebook-reader-mask"
+      @click="onMaskClick"
+      @touchmove="move"
+      @touchend="moveEnd"
+    ></div>
   </div>
 </template>
 
@@ -16,6 +23,7 @@ import {
   saveTheme,
   getLocation
 } from '../../utils/localStorage'
+import { flatten } from '../../utils/book'
 global.ePub = Epub
 
 export default {
@@ -38,11 +46,10 @@ export default {
     })
   },
   methods: {
-
     /*
-    * 初始化阅读器
-    * @method initEpub
-    */
+     * 初始化阅读器
+     * @method initEpub
+     */
     initEpub () {
       // 构造当前书本具体的nginx资源访问地址
       const baseUrl = `${process.env.VUE_APP_RES_URL}/epub/` // nginx静态资源服务器epub目录地址
@@ -61,29 +68,33 @@ export default {
       // 初始化绑定手势事件
       this.initGesture()
 
-      // ready是epubjs在解析完成后调用的一个钩子函数
-      this.book.ready.then(() => {
-        // 根据页面宽度/375和字体大小/16决定分页字数,默认750
-        // 这个算法有一个缺陷，就是不会计算资源文件（比如图片）在内容中占的位置
-        // 而且有些字（比如标题）是比较大的
-        return this.book.locations.generate(750 * (window.innerWidth / 375) *
-          (getFontSize(this.fileName)) / 16)
-      }).then(localtions => {
-        // console.log(localtions)
-        // 分页完成
-        this.setBookAvailable(true)
+      this.parseBook()
 
-        this.refreshLocation() // 刷新当前位置对应的进度条位置
-      }
-      )
+      // ready是epubjs在解析完成后调用的一个钩子函数
+      this.book.ready
+        .then(() => {
+          // 根据页面宽度/375和字体大小/16决定分页字数,默认750
+          // 这个算法有一个缺陷，就是不会计算资源文件（比如图片）在内容中占的位置
+          // 而且有些字（比如标题）是比较大的
+          return this.book.locations.generate(
+            (750 * (window.innerWidth / 375) * getFontSize(this.fileName)) / 16
+          )
+        })
+        .then(localtions => {
+          // console.log(localtions)
+          // 分页完成
+          this.setBookAvailable(true)
+
+          this.refreshLocation() // 刷新当前位置对应的进度条位置
+        })
     },
 
     /*
-    * 初始化阅读器渲染
-    * 此方法在阅读器渲染完成后中还调用了初始化字体，字号，主题，全局样式的方法
-    * 以及添加字体样式文件到阅读器中
-    * @method initRendition
-    */
+     * 初始化阅读器渲染
+     * 此方法在阅读器渲染完成后中还调用了初始化字体，字号，主题，全局样式的方法
+     * 以及添加字体样式文件到阅读器中
+     * @method initRendition
+     */
     initRendition () {
       // 将获取的书本渲染并绑定到id为'read'的dom，并且赋给this.rendition
       this.rendition = this.book.renderTo('read', {
@@ -102,31 +113,38 @@ export default {
         this.initTheme()
         // 初始化全局样式
         this.initGlobalStyle()
-      }).then(() => { // 阅读器完成渲染后
-
+      }).then(() => {
+        // 阅读器完成渲染后
       })
 
       // this.rendition.hooks.content阅读器渲染完可以获得资源文件时的钩子函数
       this.rendition.hooks.content.register(contents => {
         Promise.all([
           // 添加字体样式文件到阅读器中
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/cabin.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`),
-          contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
-        ]).then(() => {
-
-        })
+          contents.addStylesheet(
+            `${process.env.VUE_APP_RES_URL}/fonts/daysOne.css`
+          ),
+          contents.addStylesheet(
+            `${process.env.VUE_APP_RES_URL}/fonts/cabin.css`
+          ),
+          contents.addStylesheet(
+            `${process.env.VUE_APP_RES_URL}/fonts/montserrat.css`
+          ),
+          contents.addStylesheet(
+            `${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`
+          )
+        ]).then(() => {})
       })
     },
 
     /*
-    * 初始化字体
-    * @method initFontFamily
-    */
+     * 初始化字体
+     * @method initFontFamily
+     */
     initFontFamily () {
       const fontFamily = getFontFamily(this.fileName)
-      if (!fontFamily) { // 如果当前localStorage中没有FontFamily
+      if (!fontFamily) {
+        // 如果当前localStorage中没有FontFamily
         saveFontFamily(this.fileName, this.defaultFontFamily) // 设置localStorage中FontFamily为vuex中的defaultFontFamily (初始值为'default')
       } else {
         this.rendition.themes.font(fontFamily) // 否则设置字体为当前localStorage中存的FontFamily
@@ -135,12 +153,13 @@ export default {
     },
 
     /*
-    * 初始化字号
-    * @method initFontSize
-    */
+     * 初始化字号
+     * @method initFontSize
+     */
     initFontSize () {
       const fontSize = getFontSize(this.fileName)
-      if (!fontSize) { // 如果当前localStorage中没有FontSize
+      if (!fontSize) {
+        // 如果当前localStorage中没有FontSize
         saveFontSize(this.fileName, this.defaultFontSize) // 设置localStorage中FontSize为defaultFontSize (初始值为16)
       } else {
         this.rendition.themes.fontSize(fontSize) // 否则设置字号为当前localStorage中存的FontSize
@@ -149,9 +168,9 @@ export default {
     },
 
     /*
-    * 初始化主题
-    * @method initTheme
-    */
+     * 初始化主题
+     * @method initTheme
+     */
     initTheme () {
       let defaultTheme = getTheme(this.fileName)
       if (!defaultTheme) {
@@ -167,9 +186,9 @@ export default {
     },
 
     /*
-    * 初始化绑定手势事件
-    * @method initGesture
-    */
+     * 初始化绑定手势事件
+     * @method initGesture
+     */
     initGesture () {
       // on是epubjs中的方法，绑定事件到iframe中
       // epubjs解析书本后会创建一个iframe在绑定的dom中，具体结构可F12查看，这里不赘述
@@ -178,14 +197,18 @@ export default {
         this.touchStartX = event.changedTouches[0].clientX // 多个触摸动作(用户多指触摸屏幕)的第一个的X轴位置
         this.touchStartTime = event.timeStamp // 触摸开始的时间戳
       })
+
       this.rendition.on('touchend', event => {
         const offsetX = event.changedTouches[0].clientX - this.touchStartX // 触摸动作X轴偏移量
         const time = event.timeStamp - this.touchStartTime // 触摸时长
-        if (offsetX > 40) { // 当触摸动作偏移量大于40像素
+        if (offsetX > 40) {
+          // 当触摸动作偏移量大于40像素
           this.prevPage() // 翻到上一页
-        } else if (offsetX < -40) { // 当触摸动作偏移量小于-40像素
+        } else if (offsetX < -40) {
+          // 当触摸动作偏移量小于-40像素
           this.nextPage() // 翻到下一页
-        } else if (time < 500) { // 当触摸事件小于500毫秒
+        } else if (time < 500) {
+          // 当触摸事件小于500毫秒
           this.toggleMenu() // 切换菜单目录显示/隐藏
         } else {
         }
@@ -195,11 +218,12 @@ export default {
     },
 
     /*
-    * 翻到上一页
-    * @method prevPage
-    */
+     * 翻到上一页
+     * @method prevPage
+     */
     prevPage () {
-      if (this.rendition) { // 如果rendition对象存在
+      if (this.rendition) {
+        // 如果rendition对象存在
         this.rendition.prev().then(() => {
           // 刷新当前位置对应的进度条位置
           this.refreshLocation()
@@ -209,11 +233,12 @@ export default {
     },
 
     /*
-    * 翻到下一页
-    * @method initEpub
-    */
+     * 翻到下一页
+     * @method initEpub
+     */
     nextPage () {
-      if (this.rendition) { // 如果rendition对象存在
+      if (this.rendition) {
+        // 如果rendition对象存在
         this.rendition.next().then(() => {
           // 刷新当前位置对应的进度条位置
           this.refreshLocation()
@@ -223,9 +248,9 @@ export default {
     },
 
     /*
-    * 切换菜单目录显示/隐藏
-    * @method showTitleAndMenu
-    */
+     * 切换菜单目录显示/隐藏
+     * @method showTitleAndMenu
+     */
     toggleMenu () {
       // this.$store.dispatch('setMenuVisible'n, !this.menuVisible)
       if (this.menuVisible) {
@@ -236,20 +261,102 @@ export default {
     },
 
     /*
-    * 隐藏菜单目录
-    * @method hideMenu
-    */
-    hideMenu () {
-      // this.$store.dispatch('setMenuVisible', false)
-      this.setMenuVisible(false) // 隐藏顶部和底部菜单栏
-      this.setSettingVisible(-1) // 隐藏弹出设置栏
-      this.setFontFamilyVisible(false) // 隐藏字体设置栏
-    }
+     * 解析图书的封面、基本信息、章节
+     * @method parseBook
+     */
+    parseBook () {
+      this.book.loaded.cover.then(cover => {
+        // console.log(cover)
+        this.book.archive.createUrl(cover).then(url => {
+          // console.log(url)
+          this.setCover(url)
+        })
+        this.book.loaded.metadata.then(metadata => {
+          this.setMetadata(metadata)
+        })
+        this.book.loaded.navigation.then(nav => {
+          const navItem = flatten(nav.toc)
+          function find (item, level = 0) {
+            return !item.parent
+              ? level
+              : find(
+                navItem.filter(
+                  parentItem => parentItem.id === item.parent
+                )[0],
+                ++level
+              )
+          }
+          navItem.forEach(item => {
+            item.level = find(item)
+          })
+          this.setNavigation(navItem)
+        })
+      })
+    },
 
+    /*
+     * 当蒙版被点击时的绑定，用于编写书签功能
+     * 因为redition.on不支持绑定touchmove事件,所以利用一个background为透明的蒙版来绑定事件
+     * @method onMaskClick
+     * @param { object } e 点击后传入的事件event
+     */
+    onMaskClick (e) {
+      const offsetX = e.offsetX
+      const width = window.innerWidth
+      if (offsetX > 0 && offsetX < width * 0.3) {
+        this.prevPage()
+      } else if (offsetX > 0 && offsetX > width * 0.7) {
+        this.nextPage()
+      } else {
+        this.toggleMenu()
+      }
+    },
+
+    /*
+     * 计算Y轴偏移量，传入vuex
+     * @method move
+     * @param { object } e 点击后传入的事件event
+     */
+    move (e) {
+      let offsetY = 0
+      if (this.firstOffsetY) {
+        offsetY = e.changedTouches[0].clientY - this.firstOffsetY
+        this.setOffsetY(offsetY)
+      } else {
+        // changedTouches[0]表示touchmove事件中最开始的触摸点
+        this.firstOffsetY = e.changedTouches[0].clientY
+      }
+      e.preventDefault()
+      e.stopPropagation()
+    },
+
+    /*
+     * 还原偏移量
+     * @method moveEnd
+     * @param { object } e 点击后传入的事件event
+     */
+    moveEnd (e) {
+      this.setOffsetY(0)
+      this.firstOffsetY = null
+    }
   }
 }
 </script>
 
-<style lang='scss' scoped>
-
+<style lang="scss" rel="stylesheet/scss" scoped>
+@import "../../assets/styles/global";
+.ebook-reader {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  .ebook-reader-mask {
+    position: absolute;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    z-index: 150;
+    top: 0;
+    left: 0;
+  }
+}
 </style>

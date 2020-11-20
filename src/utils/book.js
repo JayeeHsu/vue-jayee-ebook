@@ -1,3 +1,5 @@
+import { getReadTime } from './localStorage'
+
 // 字号数组
 export const FONT_SIZE_LIST = [
   { fontSize: 12 },
@@ -183,4 +185,29 @@ export function throttle (fn, time) {
       canRun = true
     }, time)
   }
+}
+
+/*
+ * 获取阅读时间分钟
+ * @method getReadTimeByMinute
+ */
+export function getReadTimeByMinute (fileName) {
+  const readTime = getReadTime(fileName)
+  if (!readTime) {
+    return 0
+  } else {
+    return Math.ceil(readTime / 60)
+  }
+}
+
+/*
+ * 将章节的树状数据结构扁平化
+ * @method flatten
+ * @param {array} array 章节树
+ */
+export function flatten (array) {
+  return [].concat(...array.map(item => {
+    return [].concat(item, ...flatten(item.subitems))
+  })
+  )
 }

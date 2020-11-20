@@ -39,3 +39,13 @@ $ratio: 375/10; //定义变量ratio
   text-overflow:ellipsis;
   white-space: nowrap;
 }
+
+@mixin ellipsis2($line) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line; // 最多显示几行
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all; // 文字换行方式设置为可以打断单词
+}

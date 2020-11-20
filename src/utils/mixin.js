@@ -3,8 +3,8 @@
 // import { ebookMixin } from '../../utils/mixin'
 // export defoult{mixins: [ebookMixin]}
 import { mapGetters, mapActions } from 'vuex'
-import { addCss, themeList, removeAllCss } from './book'
-import { saveLocation } from './localStorage'
+import { addCss, themeList, removeAllCss, getReadTimeByMinute } from './book'
+import { getBookmark, saveLocation } from './localStorage'
 
 export const ebookMixin = {
   computed: {
@@ -91,12 +91,26 @@ export const ebookMixin = {
       const currentLocation = this.currentBook.rendition.currentLocation()
       // console.log(currentLocation)
 
-      // 本章的开始位置对应的进度值
-      const startCfi = currentLocation.start.cfi
-      const progress = this.currentBook.locations.percentageFromCfi(startCfi)
-      this.setProgress(Math.floor(progress * 100))
-      this.setSection(currentLocation.start.index)
-      saveLocation(this.fileName, startCfi)
+      if (currentLocation && currentLocation.start) {
+        // 本章的开始位置对应的进度值
+        const startCfi = currentLocation.start.cfi
+        const progress = this.currentBook.locations.percentageFromCfi(startCfi)
+        this.setProgress(Math.floor(progress * 100))
+        this.setSection(currentLocation.start.index)
+        saveLocation(this.fileName, startCfi)
+        // 判断本页是否被添加书签
+        const bookmark = getBookmark(this.fileName)
+        if (bookmark) {
+          // some方法是es6的新增方法，表示数组中只要有一个元素满足条件则返回true
+          if (bookmark.some(item => item.cfi === startCfi)) {
+            this.setIsBookmark(true)
+          } else {
+            this.setIsBookmark(false)
+          }
+        } else {
+          this.setIsBookmark(false)
+        }
+      }
     },
 
     /*
@@ -118,6 +132,28 @@ export const ebookMixin = {
           if (callback) callback()
         })
       }
+    },
+
+    /*
+    * 隐藏菜单目录
+    * @method hideMenu
+    */
+    hideMenu (setMenuVisible = false) {
+      // this.$store.dispatch('setMenuVisible', false)
+      if (setMenuVisible) {
+        this.setMenuVisible(false) // 隐藏顶部和底部菜单栏
+      }
+      this.setSettingVisible(-1) // 隐藏弹出设置栏
+      this.setFontFamilyVisible(false) // 隐藏字体设置栏
+    },
+
+    /*
+     * 获取阅读时间(并转化为正确格式的文本)
+     * @method getReadTimeText
+     */
+    getReadTimeText () {
+      // 这里replace '$1' 是因为我默认用'$1'占位了，把它替换成正确的时间即可
+      return this.$t('book.haveRead').replace('$1', getReadTimeByMinute(this.fileName))
     }
   }
 }

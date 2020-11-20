@@ -23,7 +23,7 @@
         </div>
         <div class="text-wrapper">
           <span class="progress-section-text">{{getSectionName}}</span>
-          <span>({{bookAvailable ? progress + '%' : '加载中...'}})</span>
+          <span>({{bookAvailable ? progress + '%' : $t('detail.loading')}})</span>
         </div>
       </div>
     </div>
@@ -32,19 +32,21 @@
 
 <script>
 import { ebookMixin } from '../../utils/mixin'
-import { getReadTime } from '../../utils/localStorage'
 export default {
   name: 'EbookSettingProgress',
   mixins: [ebookMixin],
   computed: {
     getSectionName () {
-      if (this.section) {
-        const sectionInfo = this.currentBook.section(this.section)
-        if (sectionInfo && sectionInfo.href) {
-          return this.currentBook.navigation.get(sectionInfo.href).label
-        }
-      }
-      return ''
+      // if (this.section) {
+      //   const sectionInfo = this.currentBook.section(this.section)
+      //   if (sectionInfo && sectionInfo.href && this.currentBook && this.currentBook.navigation) {
+      //     return this.currentBook.navigation.get(sectionInfo.href).label
+      //   }
+      // }
+      // 上面的写法无法获取二级(或更高)目录，所以重写为下面：
+      // 因为我们初始化的时候就获得了章节树转化而来的一维数组navigation并且存入vuex中
+      // 所以这里我们只需要获取对应的label即可
+      return this.section ? this.navigation[this.section].label : ''
     }
   },
   data () {
@@ -149,27 +151,6 @@ export default {
       if (sectionInfo && sectionInfo.href) {
         this.display(sectionInfo.href)
       }
-    },
-
-    /*
-     * 获取阅读时间(并转化为正确格式的文本)
-     * @method getReadTimeText
-     */
-    getReadTimeText () {
-      // 这里replace '$1' 是因为我默认用'$1'占位了，把它替换成正确的时间即可
-      return this.$t('book.haveRead').replace('$1', this.getReadTimeByMinute())
-    },
-    /*
-     * 获取阅读时间分钟
-     * @method getReadTimeByMinute
-     */
-    getReadTimeByMinute () {
-      const readTime = getReadTime(this.fileName)
-      if (!readTime) {
-        return 0
-      } else {
-        return Math.ceil(readTime / 60)
-      }
     }
   }
 }
@@ -181,7 +162,7 @@ export default {
     position: absolute;
     bottom: px2rem(48);
     left: 0;
-    z-index: 101;
+    z-index: 350;
     width: 100%;
     height: px2rem(90);
     background: white;

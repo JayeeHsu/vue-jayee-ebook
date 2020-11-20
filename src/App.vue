@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /*若没有在main.js中引入global.scss，则要加入上一行*/
 
   #app {
+    background: #7d8188;
     width: 100%;
     height: 100%;
   }
