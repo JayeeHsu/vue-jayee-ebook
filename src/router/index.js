@@ -19,7 +19,7 @@ const routes = [
   // }
   {
     path: '/',
-    redirect: '/ebook'
+    redirect: '/store'
   },
   {
     path: '/ebook',
@@ -28,6 +28,17 @@ const routes = [
       {
         path: ':fileName', // 动态路由,动态路径参数以冒号开头
         component: () => import('../components/ebook/EbookReader')
+      }
+    ]
+  },
+  {
+    path: '/store',
+    component: () => import('../views/store/index'),
+    redirect: 'store/home', // 重定向
+    children: [
+      {
+        path: 'home',
+        component: () => import('../views/store/StoreHome')
       }
     ]
   }

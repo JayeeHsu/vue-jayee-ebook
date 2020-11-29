@@ -30,8 +30,29 @@ export const ebookMixin = {
       'isBookmark',
       'speakingIconBottom'
     ]),
+    /*
+     * 获取主题列表
+     * @method themeList
+     */
     themeList () {
       return themeList(this)
+    },
+
+    /*
+     * 获取章节名称
+     * @method getSectionName
+     */
+    getSectionName () {
+      // if (this.section) {
+      //   const sectionInfo = this.currentBook.section(this.section)
+      //   if (sectionInfo && sectionInfo.href && this.currentBook && this.currentBook.navigation) {
+      //     return this.currentBook.navigation.get(sectionInfo.href).label
+      //   }
+      // }
+      // 上面的写法无法获取二级(或更高)目录，所以重写为下面：
+      // 因为我们初始化的时候就获得了章节树转化而来的一维数组navigation并且存入vuex中
+      // 所以这里我们只需要获取对应的label即可
+      return this.section ? this.navigation[this.section].label : ''
     }
   },
   methods: {
@@ -110,6 +131,17 @@ export const ebookMixin = {
         } else {
           this.setIsBookmark(false)
         }
+        if (this.pagelist) {
+          const totalPage = this.pagelist.length
+          const currentPage = currentLocation.start.location
+          if (currentPage && currentPage > 0) {
+            this.setPaginate(currentPage + '/' + totalPage)
+          } else {
+            this.setPaginate('/')
+          }
+        } else {
+          this.setPaginate('/')
+        }
       }
     },
 
@@ -155,5 +187,6 @@ export const ebookMixin = {
       // 这里replace '$1' 是因为我默认用'$1'占位了，把它替换成正确的时间即可
       return this.$t('book.haveRead').replace('$1', getReadTimeByMinute(this.fileName))
     }
+
   }
 }

@@ -7,6 +7,9 @@
       @click="onMaskClick"
       @touchmove="move"
       @touchend="moveEnd"
+      @mousedown.left="onMouseEnter"
+      @mousemove="onMouseMove"
+      @mouseup.left="onMouseEnd"
     ></div>
   </div>
 </template>
@@ -80,9 +83,42 @@ export default {
             (750 * (window.innerWidth / 375) * getFontSize(this.fileName)) / 16
           )
         })
-        .then(localtions => {
-          // console.log(localtions)
+        .then(locations => {
+          this.navigation.forEach(nav => {
+            nav.pagelist = []
+          })
+          locations.forEach(item => {
+            const loc = item.match(/\[(.*)]!/)[1]
+            this.navigation.forEach(nav => {
+              if (nav.href) {
+                // 兼容xhtml的文件的场景，优化了正则表达式
+                let href = nav.href.match(/\/(.*)\.xhtml$/)
+                // 如果没有匹配到，则再使用html正则进行匹配
+                if (!href) {
+                  href = nav.href.match(/^(.*)\.html$/)
+                }
+                if (href) {
+                  // loc只要包含href[1]中的内容，则认为包含在该目录下
+                  if (loc.indexOf(href[1]) >= 0) {
+                    nav.pagelist.push(item)
+                  }
+                }
+              }
+            })
+            let currentPage = 1
+            this.navigation.forEach((nav, index) => {
+              if (index === 0) {
+                nav.page = 1
+              } else {
+                nav.page = currentPage
+              }
+              currentPage += nav.pagelist.length + 1
+            })
+          })
+          // console.log(this.navigation)
+          this.setPagelist(locations)
           // 分页完成
+
           this.setBookAvailable(true)
 
           this.refreshLocation() // 刷新当前位置对应的进度条位置
@@ -101,6 +137,7 @@ export default {
         width: innerWidth,
         height: innerHeight,
         method: 'default' // 设置这个才能在微信中正常的显示
+        // flow: 'scolled' // epubjs的滚动模式，但是ios和微信不支持所以不采用此模式
       })
 
       const location = getLocation(this.fileName)
@@ -301,6 +338,11 @@ export default {
      * @param { object } e 点击后传入的事件event
      */
     onMaskClick (e) {
+      if (this.mouseState && (this.mouseState === 2 || this.mouseState === 3)) {
+        return
+      } else {
+        this.mouseState = 4
+      }
       const offsetX = e.offsetX
       const width = window.innerWidth
       if (offsetX > 0 && offsetX < width * 0.3) {
@@ -326,7 +368,7 @@ export default {
         // changedTouches[0]表示touchmove事件中最开始的触摸点
         this.firstOffsetY = e.changedTouches[0].clientY
       }
-      e.preventDefault()
+      e.preventDefault() // 主要为了取消掉下拉操作时的默认行为
       e.stopPropagation()
     },
 
@@ -338,6 +380,73 @@ export default {
     moveEnd (e) {
       this.setOffsetY(0)
       this.firstOffsetY = null
+    },
+
+    /*
+    * 鼠标状态mouseState
+    * 1 - 鼠标进入
+    * 2 - 鼠标进入后的移动
+    * 3 - 鼠标从移动状态松手
+    * 4 - 鼠标还原
+    * */
+
+    /*
+     * pc端鼠标下拉功能，绑定在onmousedown.left上，表示按下鼠标左键下拉
+     * @method onMouseEnter
+     * @param { object } e 点击后传入的事件event
+     */
+    onMouseEnter (e) {
+      // console.log('onMouseEnter', e)
+      this.mouseState = 1
+      this.mouseStartTime = e.timeStamp
+      e.preventDefault()
+      e.stopPropagation()
+    },
+
+    /*
+     * pc端鼠标下拉功能，绑定在onmousemove上，表示鼠标移动
+     * @method onMouseMove
+     * @param { object } e 点击后传入的事件event
+     */
+    onMouseMove (e) {
+      // console.log('onMouseMove', e)
+      if (this.mouseState === 1) {
+        this.mouseState = 2
+      } else if (this.mouseState === 2) {
+        let offsetY = 0
+        if (this.firstOffsetY) {
+          offsetY = e.clientY - this.firstOffsetY
+          this.setOffsetY(offsetY)
+        } else {
+          // changedTouches[0]表示touchmove事件中最开始的触摸点
+          this.firstOffsetY = e.clientY
+        }
+      }
+      e.preventDefault()
+      e.stopPropagation()
+    },
+
+    /*
+     * pc端鼠标下拉功能，绑定在onmousemove.left上，表示松开鼠标左键
+     * @method onMouseEnd
+     * @param { object } e 点击后传入的事件event
+     */
+    onMouseEnd (e) {
+      // console.log('onMouseEnd', e)
+      if (this.mouseState === 2) {
+        this.setOffsetY(0)
+        this.firstOffsetY = null
+        this.mouseState = 3
+        const time = e.timeStamp - this.mouseStartTime
+        if (time < 100) {
+          // 如果移动时间太短，则强制判定成单击事件，防止用户手滑在点击操作时移动了一点点被判定成下拉
+          this.mouseState = 4
+        }
+        e.preventDefault()
+        e.stopPropagation()
+      } else {
+        this.mouseState = 4
+      }
     }
   }
 }

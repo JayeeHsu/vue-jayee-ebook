@@ -36,18 +36,7 @@ export default {
   name: 'EbookSettingProgress',
   mixins: [ebookMixin],
   computed: {
-    getSectionName () {
-      // if (this.section) {
-      //   const sectionInfo = this.currentBook.section(this.section)
-      //   if (sectionInfo && sectionInfo.href && this.currentBook && this.currentBook.navigation) {
-      //     return this.currentBook.navigation.get(sectionInfo.href).label
-      //   }
-      // }
-      // 上面的写法无法获取二级(或更高)目录，所以重写为下面：
-      // 因为我们初始化的时候就获得了章节树转化而来的一维数组navigation并且存入vuex中
-      // 所以这里我们只需要获取对应的label即可
-      return this.section ? this.navigation[this.section].label : ''
-    }
+    // getSectionName 在EbookSettingProgress中也要使用，已移动到minxin中
   },
   data () {
     return {
@@ -162,7 +151,7 @@ export default {
     position: absolute;
     bottom: px2rem(48);
     left: 0;
-    z-index: 350;
+    z-index: 160;
     width: 100%;
     height: px2rem(90);
     background: white;

@@ -87,7 +87,7 @@ export default {
     position: absolute;
     bottom: 0;
     left: 0;
-    z-index: 350;
+    z-index: 300;
     width: 100%;
     font-size: 0;
     box-shadow: 0 px2rem(-4) px2rem(6) rgba(0, 0, 0, .1);

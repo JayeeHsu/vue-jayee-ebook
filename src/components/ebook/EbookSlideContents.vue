@@ -20,8 +20,14 @@
           <img :src="cover" alt="" class="slide-contents-book-img">
         </div>
         <div class="slide-contents-book-info-wrapper">
-          <div class="slide-contents-book-title">{{metadata.title}}</div>
-          <div class="slide-contents-book-author">{{metadata.creator}}</div>
+          <div class="slide-contents-book-title">
+            <span class="slide-contents-book-title-text">{{metadata.title}}</span>
+          </div>
+          <div class="slide-contents-book-author">
+            <span class="slide-contents-book-author-text">
+              {{metadata.creator}}
+            </span>
+          </div>
         </div>
         <div class="slide-contents-book-progress-wrapper">
           <div class="slide-contents-book-progress">
@@ -43,7 +49,7 @@
               :style="contentItemStyle(item)"
               @click="displayFromNavigationOrSearch(item.href)"
         >{{item.label}}</span>
-        <span class="slide-contents-item-page"></span>
+        <span class="slide-contents-item-page">{{item.page}}</span>
       </div>
       </scroll>
       <scroll class="slide-search-list"
@@ -227,15 +233,28 @@ export default {
           font-size: px2rem(14);
           // 375*0.85-30-20-45-70=153.75
           // 屏幕宽度*slide占比-父级的padding-这一级的padding-封面图片宽度-右侧progress-wrapper宽
-          width: px2rem(153.75); // 缩略显示必须要设置宽度
+
+          // width: px2rem(153.75); // 缩略显示必须要设置宽度
+          // 弃用上面的width，采用下面的flex布局方案：
+          @include left;
+          .slide-contents-book-title-text {
+              @include ellipsis2(3)
+          }
           line-height: px2rem(16);
           @include ellipsis2(2) // 2行省略
         }
         .slide-contents-book-author{
           font-size: px2rem(12);
-          width: px2rem(153.75); // 缩略显示必须要设置宽度
           margin-top: px2rem(5);
-          @include ellipsis;
+
+          width: px2rem(153.75); // 缩略显示必须要设置宽度
+          // 弃用上面的width，采用下面的flex布局方案：
+          @include left
+          .slide-contents-book-author-text {
+            @include ellipsis;
+          }
+          line-height: px2rem(14);
+          @include ellipsis2(1);
         }
       }
       .slide-contents-book-progress-wrapper{
@@ -269,7 +288,11 @@ export default {
           @include ellipsis2(1);
           line-height: px2rem(16);
         }
-        .slide-contents-item-page {}
+        .slide-contents-item-page {
+          flex: 0 0 px2rem(30);
+          font-size: px2rem(10);
+          @include right;
+        }
       }
     }
     .slide-search-list{

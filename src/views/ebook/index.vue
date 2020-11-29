@@ -1,9 +1,11 @@
 <template>
   <div class="ebook" ref="ebook">
+    <ebook-header/>
     <ebook-top-menu/>
     <ebook-reader/>
     <ebook-bottom-menu/>
     <ebook-bookmark/>
+    <ebook-footer/>
   </div>
 </template>
 
@@ -12,6 +14,8 @@ import EbookReader from '../../components/ebook/EbookReader'
 import EbookTopMenu from '../../components/ebook/EbookTopMenu'
 import EbookBottomMenu from '../../components/ebook/EbookBottomMenu'
 import EbookBookmark from '../../components/ebook/EbookBookmark'
+import EbookHeader from '../../components/ebook/EbookHeader'
+import EbookFooter from '../../components/ebook/EbookFooter'
 import { getReadTime, saveReadTime } from '../../utils/localStorage'
 import { ebookMixin } from '../../utils/mixin'
 
@@ -19,10 +23,12 @@ export default {
   mixins: [ebookMixin],
   name: 'index.vue',
   components: {
+    EbookHeader,
     EbookBookmark,
     EbookReader,
     EbookTopMenu,
-    EbookBottomMenu
+    EbookBottomMenu,
+    EbookFooter
   },
   watch: { // 监听
     offsetY (v) { // v表示新的offsetY

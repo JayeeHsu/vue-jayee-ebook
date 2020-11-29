@@ -1,4 +1,5 @@
 import { getReadTime } from './localStorage'
+import { realPx } from './utils'
 
 // 字号数组
 export const FONT_SIZE_LIST = [
@@ -34,9 +35,12 @@ export function themeList (vue) {
       style: {
         body: {
           color: '#4c5059',
-          background: '#cecece'
-          // 'padding-top': `${realPx(48)}px!important`,
-          // 'padding-bottom': `${realPx(48)}px!important`
+          background: '#cecece',
+
+          // 改变epubjs中iframe默认的20px的padding,使得这个padding值变为自适应的
+          // 因为我们要在上下padding的空间放页眉和页脚
+          'padding-top': `${realPx(48)}px!important`,
+          'padding-bottom': `${realPx(48)}px!important`
         },
         img: {
           width: '100%'
@@ -52,9 +56,9 @@ export function themeList (vue) {
       style: {
         body: {
           color: '#5c5b56',
-          background: '#c6c2b6'
-          // 'padding-top': `${realPx(48)}px!important`,
-          // 'padding-bottom': `${realPx(48)}px!important`
+          background: '#c6c2b6',
+          'padding-top': `${realPx(48)}px!important`,
+          'padding-bottom': `${realPx(48)}px!important`
         },
         img: {
           width: '100%'
@@ -70,9 +74,9 @@ export function themeList (vue) {
       style: {
         body: {
           color: '#404c42',
-          background: '#a9c1a9'
-          // 'padding-top': `${realPx(48)}px!important`,
-          // 'padding-bottom': `${realPx(48)}px!important`
+          background: '#a9c1a9',
+          'padding-top': `${realPx(48)}px!important`,
+          'padding-bottom': `${realPx(48)}px!important`
         },
         img: {
           width: '100%'
@@ -88,9 +92,9 @@ export function themeList (vue) {
       style: {
         body: {
           color: '#cecece',
-          background: '#000000'
-          // 'padding-top': `${realPx(48)}px!important`,
-          // 'padding-bottom': `${realPx(48)}px!important`
+          background: '#000000',
+          'padding-top': `${realPx(48)}px!important`,
+          'padding-bottom': `${realPx(48)}px!important`
         },
         img: {
           width: '100%'
