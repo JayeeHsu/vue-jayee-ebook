@@ -1,7 +1,18 @@
 $ratio: 375/10; //定义变量ratio
+$animationTime: .2s;
+$animationType: linear;
 
 @function px2rem($px){
   @return $px / $ratio + rem;
+}
+
+@mixin absCenter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
 }
 
 @mixin center {
@@ -48,4 +59,29 @@ $ratio: 375/10; //定义变量ratio
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-all; // 文字换行方式设置为可以打断单词
+}
+
+@mixin columnTop {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+@mixin columnLeft {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.icon {
+  color: #666;
+  font-size: px2rem(16);
+}
+
+.title {
+  color: #666;
+  font-size: px2rem(16);
+  font-weight: bold;
 }

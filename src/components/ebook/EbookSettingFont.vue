@@ -43,7 +43,6 @@ export default {
     }
   },
   methods: {
-
     /*
     * 设置字体大小
     * @method setFontSize

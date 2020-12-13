@@ -1,12 +1,85 @@
 <template>
     <div class="store-home">
-      411
+        <search-bar></search-bar>
+        <flap-card :data="random"></flap-card>
+        <scroll
+          :top="scrollTop"
+          @onScroll="onScroll"
+          ref="scroll"
+        >
+         <div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>  <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>  <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>  <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>  <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+           <div>1111111111</div>
+         </div>
+        </scroll>
     </div>
 </template>
 
 <script>
+import SearchBar from '../../components/home/SearchBar'
+import Scroll from '../../components/common/Scroll'
+import FlapCard from '../../components/home/FlapCard'
+import { storeHomeMixin } from '../../utils/mixin'
+import { home } from '../../api/store'
+
 export default {
-  name: 'StoreHome'
+  name: 'StoreHome',
+  mixins: [storeHomeMixin],
+  components: {
+    SearchBar,
+    Scroll,
+    FlapCard
+  },
+  mounted () {
+    home().then(response => {
+      if (response && response.status === 200) {
+        const data = response.data
+        const randomIndex = Math.floor(Math.random() * data.random.length)
+        this.random = data.random[randomIndex]
+      }
+    })
+  },
+  data () {
+    return {
+      scrollTop: 94,
+      random: null
+    }
+  },
+  methods: {
+    /*
+    * 监听scroll组件滚动 @onScroll="onScroll"
+    * @method onScroll
+    * @param {number} offsetY Y轴偏移量
+    */
+    onScroll (offsetY) {
+      this.setOffsetY(offsetY)
+      if (offsetY > 0) {
+        this.scrollTop = 52
+      } else {
+        this.scrollTop = 94
+      }
+      this.$refs.scroll.refresh()
+    }
+  }
+
 }
 </script>
 

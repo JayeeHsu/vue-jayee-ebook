@@ -32,6 +32,7 @@ export default {
     },
     refresh () {
       if (this.$refs.scrollWrapper) {
+        // 计算滚动条高度
         this.$refs.scrollWrapper.style.height = window.innerHeight - realPx(this.top) - realPx(this.bottom) + 'px'
         this.$refs.scrollWrapper.addEventListener('scroll', this.handleScroll)
       }
