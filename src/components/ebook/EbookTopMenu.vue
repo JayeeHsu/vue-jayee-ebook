@@ -30,7 +30,7 @@ export default {
     * @method back
     */
     back () {
-      console.log('back')
+      this.$router.go(-1)
     }
   }
 }

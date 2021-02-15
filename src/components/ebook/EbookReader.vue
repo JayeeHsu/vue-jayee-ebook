@@ -139,7 +139,6 @@ export default {
         method: 'default' // 设置这个才能在微信中正常的显示
         // flow: 'scolled' // epubjs的滚动模式，但是ios和微信不支持所以不采用此模式
       })
-
       const location = getLocation(this.fileName)
       this.display(location || null, () => {
         // 初始化字体
