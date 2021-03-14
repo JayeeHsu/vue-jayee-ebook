@@ -1,4 +1,4 @@
-function mock(app, url, data) {
+function mock (app, url, data) {
   app.get(url, (request, response) => {
     response.json(data)
   })
@@ -15,7 +15,7 @@ module.exports = {
     : '/',
   // 如果是生产模式则baseUrl为'./'，开发和测试则为'/'
   devServer: {
-    before(app) {
+    before (app) {
       mock(app, '/book/home', homeData)
       mock(app, '/book/shelf', shelfData)
       mock(app, '/book/list', listData)

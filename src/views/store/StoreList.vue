@@ -76,6 +76,7 @@ export default {
           this.list = {}
           this.list[key] = data
         } else if (keyword) {
+          // 关键词搜索算法(书城页的搜索框)
           Object.keys(this.list).filter(key => {
             this.list[key] = this.list[key].filter(book => book.fileName.indexOf(keyword) >= 0)
             return this.list[key].length > 0

@@ -27,7 +27,9 @@
               :placeholder="$t('home.hint')"
               v-model="searchText"
               @click="showHotSearch"
+              @keyup.enter.exact="search"
           >
+          <!-- keyup.enter.exact表示仅回车键弹起时触发（ctrl+回车无效） -->
         </div>
       </div>
     </div>
@@ -76,12 +78,26 @@ export default {
   },
   methods: {
     /*
+    * 搜索
+    * @method search
+    */
+    search () {
+      this.$router.push({
+        path: '/store/list',
+        query: {
+          keyword: this.searchText
+        }
+      })
+    },
+
+    /*
     * 弹出推荐卡
     * @method showFlapCard
     */
     showFlapCard () {
       this.setFlapCardVisible(true)
     },
+
     /*
     * 返回
     * @method back
