@@ -34,8 +34,12 @@ const routes = [
   {
     path: '/store',
     component: () => import('../views/store/index'),
-    redirect: 'store/home', // 重定向
+    redirect: 'store/shelf', // 重定向，指定默认路径
     children: [
+      {
+        path: 'shelf',
+        component: () => import('../views/store/StoreShelf')
+      },
       {
         path: 'home',
         component: () => import('../views/store/StoreHome')

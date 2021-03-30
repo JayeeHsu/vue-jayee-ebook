@@ -108,7 +108,15 @@ export default {
       } else {
         this.hideShadow()
       }
-      this.hideHotSearch()
+      if (this.hotSearchVisible) {
+        // 如果用户点开了搜索栏，则点击返回时触发的是隐藏搜索栏
+        this.hideHotSearch()
+      } else {
+        // 如果是正常情况，则返回书架页
+        this.$router.push({
+          path: '/store/shelf'
+        })
+      }
     },
 
     /*
