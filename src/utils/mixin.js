@@ -5,6 +5,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { addCss, themeList, removeAllCss, getReadTimeByMinute } from './book'
 import { getBookmark, saveLocation } from './localStorage'
+import { gotoBookDetail } from '../utils/store'
 
 export const ebookMixin = {
   computed: {
@@ -198,13 +199,7 @@ export const storeHomeMixin = {
   methods: {
     ...mapActions(['setOffsetY', 'setHotSearchOffsetY', 'setFlapCardVisible']),
     showBookDetail (book) {
-      this.$router.push({
-        path: '/store/detail',
-        query: {
-          fileName: book.fileName,
-          category: book.categoryText
-        }
-      })
+      gotoBookDetail(this, book)
     }
   }
 }
@@ -226,6 +221,9 @@ export const storeShelfMixin = {
       'setShelfSelected',
       'setShelfTitleVisible',
       'setOffsetY'
-    ])
+    ]),
+    showBookDetail (book) {
+      gotoBookDetail(this, book)
+    }
   }
 }

@@ -1,30 +1,50 @@
 <template>
   <div class="store-shelf">
     <shelf-title></shelf-title>
-    <scroll class="store-shelf-scroll-wrapper" :top="0"
+    <scroll class="store-shelf-scroll-wrapper"
+          :top="0"
+          :bottom="scrollBottom"
           @onScroll="onScroll"
+          ref="scroll"
     >
       <shelf-search></shelf-search>
       <shelf-list></shelf-list>
+      <shelf-footer></shelf-footer>
     </scroll>
   </div>
 </template>
 
 <script>
 import { storeShelfMixin } from '../../utils/mixin'
-import ShelfTitle from '../../components/shlef/ShelfTitle'
+import ShelfTitle from '../../components/shelf/ShelfTitle'
 import Scroll from '../../components/common/Scroll.vue'
-import ShelfSearch from '../../components/shlef/ShelfSearch.vue'
-import ShelfList from '../../components/shlef/ShelfList.vue'
+import ShelfSearch from '../../components/shelf/ShelfSearch.vue'
+import ShelfList from '../../components/shelf/ShelfList.vue'
+import ShelfFooter from '../../components/shelf/ShelfFooter.vue'
 import { shelf } from '../../api/store'
+import { appendAddToShelf } from '../../utils/store'
 
 export default {
   mixins: [storeShelfMixin],
+  watch: {
+    isEditMode (isEditMode) {
+      this.scrollBottom = isEditMode ? 48 : 0
+      this.$nextTick(() => {
+        this.$refs.scroll.refresh()
+      })
+    }
+  },
+  data () {
+    return {
+      scrollBottom: 0
+    }
+  },
   components: {
     ShelfTitle,
     Scroll,
     ShelfSearch,
-    ShelfList
+    ShelfList,
+    ShelfFooter
   },
   methods: {
     onScroll (offsetY) {
@@ -33,7 +53,7 @@ export default {
     getShelfList () {
       shelf().then(response => {
         if (response.status === 200 && response.data && response.data.bookList) {
-          this.setShelfList(response.data.bookList)
+          this.setShelfList(appendAddToShelf(response.data.bookList))
         }
       })
     }
@@ -45,7 +65,7 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  @import "../../assets/styles/global";
+@import "../../assets/styles/global";
 .store-shelf {
     position: relative;
     z-index: 100;

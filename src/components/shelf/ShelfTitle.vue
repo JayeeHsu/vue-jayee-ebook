@@ -47,6 +47,11 @@ export default {
   },
   methods: {
     onEditClick () {
+      if (!this.isEditMode) {
+        // 点击取消时,清空已选书
+        this.setShelfSelected([])
+        this.shelfList.forEach(item => { item.selected = false })
+      }
       this.setIsEditMode(!this.isEditMode)
     },
     clearCache () {
