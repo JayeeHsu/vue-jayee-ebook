@@ -81,10 +81,15 @@ import Toast from '../../components/common/Toast'
 import { detail } from '../../api/store'
 import { px2rem, realPx } from '../../utils/utils'
 import Epub from 'epubjs'
+import { getLocalForage } from '../../utils/localForage'
+import { getBookShelf, saveBookShelf } from '../../utils/localStorage'
+import { removeFromBookShelf, addToShelf } from '../../utils/store'
+import { storeShelfMixin } from '../../utils/mixin'
 
 global.ePub = Epub
 
 export default {
+  mixins: [storeShelfMixin],
   components: {
     DetailTitle,
     Scroll,
@@ -122,10 +127,10 @@ export default {
       return this.metadata ? this.metadata.creator : ''
     },
     inBookShelf () {
-      if (this.bookItem && this.bookShelf) {
+      if (this.bookItem && this.shelfList) {
         const flatShelf = (function flatten (arr) {
           return [].concat(...arr.map(v => v.itemList ? [v, ...flatten(v.itemList)] : v))
-        })(this.bookShelf).filter(item => item.type === 1)
+        })(this.shelfList).filter(item => item.type === 1)
         const book = flatShelf.filter(item => item.fileName === this.bookItem.fileName)
         return book && book.length > 0
       } else {
@@ -153,6 +158,18 @@ export default {
   },
   methods: {
     addOrRemoveShelf () {
+      // 如果电子书存在于书架，则从书架中移除电子书
+      if (this.inBookShelf) {
+        this.setShelfList(removeFromBookShelf(this.bookItem))
+          .then(() => {
+            // 将书架数据保存到LocalStorage
+            saveBookShelf(this.shelfList)
+          })
+      } else {
+        // 如果电子书不存在于书架，则添加电子书到书架
+        addToShelf(this.bookItem)
+        this.setShelfList(getBookShelf())
+      }
     },
     showToast (text) {
       this.toastText = text
@@ -160,10 +177,29 @@ export default {
     },
     readBook () {
       this.$router.push({
-        path: `/ebook/${this.categoryText}|${this.fileName}`
+        path: `/ebook/${this.bookItem.categoryText}|${this.fileName}`
       })
     },
     trialListening () {
+      getLocalForage(this.bookItem.fileName, (err, blob) => {
+        if (!err && blob && blob instanceof Blob) {
+          // 如果缓存中存在已离线好的电子书
+          this.$router.push({
+            path: '/store/speaking',
+            query: {
+              fileName: this.bookItem.fileName
+            }
+          })
+        } else {
+          this.$router.push({
+            path: '/store/speaking',
+            query: {
+              fileName: this.bookItem.fileName,
+              opf: this.opf
+            }
+          })
+        }
+      })
     },
     read (item) {
       this.$router.push({
@@ -265,6 +301,7 @@ export default {
   },
   mounted () {
     this.init()
+    if (this.shelfList || this.shelfList.length === 0) { this.getShelfList() }
   }
 }
 </script>

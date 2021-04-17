@@ -1,6 +1,13 @@
 import axios from 'axios'
 import { setLocalForage } from '../utils/localForage'
 
+export function flatList () {
+  return axios({
+    method: 'get',
+    url: `${process.env.VUE_APP_BOOK_URL}/book/flat-list`
+  })
+}
+
 export function download (book, onSuccess, onError, onProgress) {
   if (!onProgress) {
     // 当用户只传了三个参数，则认为第三个参数是onProgress

@@ -41,6 +41,10 @@ const routes = [
         component: () => import('../views/store/StoreShelf')
       },
       {
+        path: 'category',
+        component: () => import('../views/store/StoreCategory')
+      },
+      {
         path: 'home',
         component: () => import('../views/store/StoreHome')
       },
@@ -51,6 +55,10 @@ const routes = [
       {
         path: 'detail',
         component: () => import('../views/store/StoreDetail.vue')
+      },
+      {
+        path: 'speaking',
+        component: () => import('../views/store/StoreSpeaking.vue')
       }
     ]
   }

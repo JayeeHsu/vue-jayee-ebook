@@ -1,24 +1,5 @@
 import { getLocalStorage, getBookShelf, saveBookShelf } from './localStorage'
 
-export function addToShelf (book) {
-  let shelfList = getBookShelf()
-  shelfList = removeAddFromShelf(shelfList)
-  book.type = 1
-  shelfList.push(book)
-  shelfList = computeId(shelfList)
-  shelfList = appendAddToShelf(shelfList)
-  saveBookShelf(shelfList)
-}
-
-export function removeFromBookShelf (book) {
-  return getBookShelf().filter(item => {
-    if (item.itemList) {
-      item.itemList = removeAddFromShelf(item.itemList)
-    }
-    return item.fileName !== book.fileName
-  })
-}
-
 export function flatBookList (bookList) {
   if (bookList) {
     let orgBookList = bookList.filter(item => {
@@ -50,6 +31,26 @@ export function flatBookList (bookList) {
 export function findBook (fileName) {
   const bookList = getLocalStorage('shelf')
   return flatBookList(bookList).find(item => item.fileName === fileName)
+}
+
+export function addToShelf (book) {
+  let shelfList = getBookShelf()
+  shelfList = removeAddFromShelf(shelfList)
+  book.type = 1
+  shelfList.push(book)
+  shelfList = computeId(shelfList)
+  shelfList = appendAddToShelf(shelfList)
+  saveBookShelf(shelfList)
+}
+
+export function removeFromBookShelf (book, bookList) {
+  if (!bookList) bookList = getBookShelf()
+  return bookList.filter(item => {
+    if (item.itemList) {
+      item.itemList = removeFromBookShelf(book, item.itemList)
+    }
+    return item.fileName !== book.fileName
+  })
 }
 
 export function computeId (list) {

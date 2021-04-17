@@ -41,17 +41,24 @@ export default {
   methods: {
     onItemClick () {
       if (this.isEditMode) {
-        this.data.selected = !this.data.selected
-        if (this.data.selected) {
-          this.shelfSelected.pushWithoutDuplicate(this.data)
-        } else {
-          this.setShelfSelected(this.shelfSelected.filter(item => item.id !== this.data.id))
+        if (this.data.type === 1) {
+          this.data.selected = !this.data.selected
+          if (this.data.selected) {
+            this.shelfSelected.pushWithoutDuplicate(this.data)
+          } else {
+            this.setShelfSelected(this.shelfSelected.filter(item => item.id !== this.data.id))
+          }
         }
       } else {
         if (this.data.type === 1) {
           this.showBookDetail(this.data)
         } else if (this.data.type === 2) {
-
+          this.$router.push({
+            path: '/store/category',
+            query: {
+              title: this.data.title
+            }
+          })
         } else if (this.data.type === 3) {
           gotoStoreHome(this)
         }

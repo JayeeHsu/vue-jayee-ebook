@@ -1,29 +1,41 @@
 <template>
- <div class="shelf-list">
-   <div class="shelf-list-item-wrapper" v-for="item in shelfList" :key="item.id">
+ <div class="shelf-list" :style="{top:shelfListTop}">
+   <transition-group name="list" tag="div" id="shelf-list">
+   <div class="shelf-list-item-wrapper" v-for="item in data" :key="item.id">
        <shelf-item :data="item" :style="{height: itemHeight}"></shelf-item>
       <div class="shelf-list-title-wrapper">
         <span class="shelf-list-title title-small">{{item.title}}</span>
       </div>
    </div>
+   </transition-group>
     </div>
 </template>
 
 <script>
 import { storeShelfMixin } from '../../utils/mixin'
 import ShelfItem from './ShelfItem'
-import { realPx } from '../../utils/utils'
+import { px2rem, realPx } from '../../utils/utils'
 
 export default {
   mixins: [storeShelfMixin],
   components: {
     ShelfItem
   },
+  props: {
+    top: {
+      type: Number,
+      default: 94
+    },
+    data: Array
+  },
   computed: {
     itemHeight () {
       // 封面图片规格 h/w = 350 /250
       // 空白padding间隔一共为px2rem(120)
       return ((window.innerWidth - realPx(120)) / 3) * 350 / 250 + 'px'
+    },
+    shelfListTop () {
+      return px2rem(this.top) + 'rem'
     }
   }
 }
@@ -33,9 +45,10 @@ export default {
 @import "../../assets/styles/global.scss";
 .shelf-list{
     position: absolute;
-    top: px2rem(94);
     left: 0;
     z-index: 100;
+    width: 100%;
+    #shelf-list{
     display: flex;
     flex-flow:  row wrap;
     width: 100%;
@@ -46,9 +59,15 @@ export default {
         width: 33.33%;
         padding: px2rem(15);
         box-sizing: border-box;
+        &.list-leave-active{
+          display: none;
+        }
+        &.list-move{
+          transition: transform .5s;
+        }
         .shelf-list-title-wrapper{
           margin-top: px2rem(10);
         }
-    }
+    }}
 }
 </style>

@@ -184,7 +184,7 @@ export default {
         }
         .progress {
           width: 100%;
-          -webkit-appearance: none;
+          -webkit-appearance: none; // 去除默认风格
           height: px2rem(2);
           margin:0 px2rem(10);
 
@@ -193,7 +193,7 @@ export default {
           }
 
           &::-webkit-slider-thumb { //进度条按钮样式
-            -webkit-appearance: none;
+            -webkit-appearance: none; // 去除默认风格
             height: px2rem(20);
             width: px2rem(20);
             border-radius: 50%;
