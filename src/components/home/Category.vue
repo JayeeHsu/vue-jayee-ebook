@@ -37,7 +37,7 @@ export default {
         path: '/store/list',
         query: {
           category: getCategoryName(item.category),
-          categoryText: (item.category)
+          categoryText: this.categoryText(item.category)
         }
       })
     },
