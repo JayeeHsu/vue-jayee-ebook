@@ -17,11 +17,11 @@ export default new Vuex.Store({
   },
   mutations: {
   },
-  actions: { ...bookActions, ...storeActions },
   modules: {
     // 包括了state 和 mutations
     book,
     store
   },
+  actions: { ...bookActions, ...storeActions },
   getters: { ...bookStateGetters, ...storeStateGetters }
 })

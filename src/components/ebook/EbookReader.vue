@@ -27,6 +27,7 @@ import {
   getLocation
 } from '../../utils/localStorage'
 import { flatten } from '../../utils/book'
+import { getLocalForage } from '../../utils/localForage'
 global.ePub = Epub
 
 export default {
@@ -34,18 +35,31 @@ export default {
   mixins: [ebookMixin],
   // mapActions、mapGetters等封装到了ebookMixin中,
   // this.$store.dispatch.xxx、this.$store.state.xxx可以直接改用this.xxx直接调用
-
+  data () {
+    return {
+      isBookReady: false // 表示书籍已加载完毕,此时才可进行翻页操作
+    }
+  },
   mounted () {
     // 将动态路由:fileName中的'|'解析为'/'
     // History|2018_Book_CapitalPunishmentAndTheCrimina
     // History/2018_Book_CapitalPunishmentAndTheCrimina
-    const fileName = this.$route.params.fileName.split('|').join('/')
-
+    const books = this.$route.params.fileName.split('|') // books变量是 '分类|书名'
+    const fileName = books[1]
     // 提交修改vuex中的fileName
-    // this.$store.dispatch('setFileName', fileName).then(() => {
-    this.setFileName(fileName).then(() => {
-      // 初始化阅读器
-      this.initEpub()
+    //  this.setFileName是封装的this.$store.dispatch('setFileName', fileName).then(() => {
+    getLocalForage(fileName, (err, blob) => {
+      if (!err && blob) {
+        // localforage中有这本书的缓存
+        this.setFileName(books.join('/')).then(() => {
+          this.initEpub(blob)
+        })
+      } else {
+        this.setFileName(books.join('/')).then(() => {
+          const url = process.env.VUE_APP_EPUB_URL + '/' + this.fileName + '.epub'
+          this.initEpub(url)
+        })
+      }
     })
   },
   methods: {
@@ -53,11 +67,7 @@ export default {
      * 初始化阅读器
      * @method initEpub
      */
-    initEpub () {
-      // 构造当前书本具体的nginx资源访问地址
-      const baseUrl = `${process.env.VUE_APP_RES_URL}/epub/` // nginx静态资源服务器epub目录地址
-      const url = baseUrl + this.fileName + '.epub' // nginx资源地址+文件名+后缀
-
+    initEpub (url) {
       // 调用利用epubjs解析url得到书本信息
       this.book = new Epub(url)
       // this.$store.dispatch('setCurrentBook', this.book)
@@ -139,7 +149,6 @@ export default {
         method: 'default' // 设置这个才能在微信中正常的显示
         // flow: 'scolled' // epubjs的滚动模式，但是ios和微信不支持所以不采用此模式
       })
-
       const location = getLocation(this.fileName)
       this.display(location || null, () => {
         // 初始化字体
@@ -152,6 +161,7 @@ export default {
         this.initGlobalStyle()
       }).then(() => {
         // 阅读器完成渲染后
+        this.isBookReady = true
       })
 
       // this.rendition.hooks.content阅读器渲染完可以获得资源文件时的钩子函数
@@ -259,7 +269,7 @@ export default {
      * @method prevPage
      */
     prevPage () {
-      if (this.rendition) {
+      if (this.rendition && this.isBookReady) {
         // 如果rendition对象存在
         this.rendition.prev().then(() => {
           // 刷新当前位置对应的进度条位置
@@ -274,7 +284,7 @@ export default {
      * @method initEpub
      */
     nextPage () {
-      if (this.rendition) {
+      if (this.rendition && this.isBookReady) {
         // 如果rendition对象存在
         this.rendition.next().then(() => {
           // 刷新当前位置对应的进度条位置

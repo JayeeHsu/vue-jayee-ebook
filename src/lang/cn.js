@@ -77,7 +77,7 @@ const messages = {
     notPurchased: '未购买',
     selectBook: '选择书籍',
     haveSelectedBook: '已选择$1本',
-    haveSelectedBooks: '已选择$1本',
+    haveSelectedBooks: '已选择$1本', // 中文里不会出现book和books这种单复数的情况，所以这里一样
     moveBook: '移动书籍',
     newGroup: '新建分组',
     groupOut: '移出分组',

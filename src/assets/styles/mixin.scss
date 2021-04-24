@@ -81,6 +81,21 @@ $animationType: linear;
   justify-content: center;
   align-items: center;
 }
+
+@mixin scroll{
+  overflow-x: hidden;
+  overflow-y:scroll;
+  -webkit-overflow-scrolling: touch; // 提升移动端滚动性能
+  &::-webkit-scrollbar{
+    display: none;
+  }
+}
+
+@mixin leftBottom{
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
 .icon {
   color: #666;
   font-size: px2rem(16);

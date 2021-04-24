@@ -34,11 +34,31 @@ const routes = [
   {
     path: '/store',
     component: () => import('../views/store/index'),
-    redirect: 'store/home', // 重定向
+    redirect: 'store/shelf', // 重定向，指定默认路径
     children: [
+      {
+        path: 'shelf',
+        component: () => import('../views/store/StoreShelf')
+      },
+      {
+        path: 'category',
+        component: () => import('../views/store/StoreCategory')
+      },
       {
         path: 'home',
         component: () => import('../views/store/StoreHome')
+      },
+      {
+        path: 'list',
+        component: () => import('../views/store/StoreList.vue')
+      },
+      {
+        path: 'detail',
+        component: () => import('../views/store/StoreDetail.vue')
+      },
+      {
+        path: 'speaking',
+        component: () => import('../views/store/StoreSpeaking.vue')
       }
     ]
   }
