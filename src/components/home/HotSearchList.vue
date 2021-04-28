@@ -107,7 +107,7 @@ export default {
           },
           {
             type: 2,
-            text: 'imooc'
+            text: 'jayee'
           },
           {
             type: 2,
