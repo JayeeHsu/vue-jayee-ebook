@@ -169,9 +169,7 @@ export default {
         width: 100%;
         height: px2rem(40);
         font-size: px2rem(12);
-        @include center
-        .read-time-text{
-        }
+        @include center;
       }
       .progress-wrapper {
         width: 100%;
@@ -187,11 +185,9 @@ export default {
           -webkit-appearance: none; // 去除默认风格
           height: px2rem(2);
           margin:0 px2rem(10);
-
           &:focus { //去除进度条边框
             outline: none;
           }
-
           &::-webkit-slider-thumb { //进度条按钮样式
             -webkit-appearance: none; // 去除默认风格
             height: px2rem(20);
@@ -219,7 +215,7 @@ export default {
         box-sizing: border-box;
         -moz-box-sizing:border-box; /* Firefox */
         -webkit-box-sizing:border-box; /* Safari */
-        @include center
+        @include center;
         .progress-section-text {
           @include ellipsis
         }

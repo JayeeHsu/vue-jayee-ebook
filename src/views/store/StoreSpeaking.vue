@@ -3,7 +3,7 @@
   <div class="book-speaking">
     <detail-title @back="back" ref="title"></detail-title>
     <scroll class="content-wrapper"
-            :top="42"
+            :top="0"
             :bottom="scrollBottom"
             :ifNoScroll="disableScroll"
             @onScroll="onScroll"
