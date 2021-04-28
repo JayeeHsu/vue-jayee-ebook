@@ -1,0 +1,22 @@
+{
+    "id": 1,
+    "fileName": "2018_Book_FundamentalApproachesToSoftwar",
+    "cover": "http://192.168.3.2:8081/img/ComputerScience/978-3-319-89363-1_CoverFigure.jpg",
+    "title": "Fundamental Approaches to Software Engineering",
+    "author": "Alessandra Russo",
+    "publisher": "Springer International Publishing",
+    "bookId": "2018_Book_FundamentalApproachesToSoftwar",
+    "category": 1,
+    "categoryText": "ComputerScience",
+    "language": "en",
+    "rootFile": "OEBPS/package.opf",
+    "selected": true,
+    "private": true,
+    "cache": false,
+    "haveRead": 0,
+    "type": 1
+}, {
+    "id": -1,
+    "type": 3,
+    "selected": false
+}

@@ -15,13 +15,14 @@
         <div class="bottom-playing-page-text">{{playInfo ? playInfo.currentMinute : '00'}}:{{playInfo ? playInfo.currentSecond : '00'}} / {{playInfo ? playInfo.totalMinute : '00'}}:{{playInfo ? playInfo.totalSecond : '00'}}</div>
       </div>
     </div>
-    <div class="bottom-btn-wrapper">
+    <!-- <div class="bottom-btn-wrapper">
       <span class="bottom-btn-text">{{$t('detail.addOrRemoveShelf')}}</span>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
+
 export default {
   props: {
     chapter: Object,
@@ -51,11 +52,11 @@ export default {
     left: 0;
     z-index: 110;
     width: 100%;
-    height: px2rem(116);
+    height: px2rem(64);
     background: white;
     box-shadow: 0 px2rem(-2) px2rem(2) 0 rgba(0, 0, 0, .1);
     &.hide-play {
-      height: px2rem(52);
+      height: px2rem(0);
     }
     .bottom-playing-wrapper {
       display: flex;

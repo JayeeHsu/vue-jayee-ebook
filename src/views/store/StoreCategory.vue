@@ -1,3 +1,4 @@
+<!-- 书架内用户自定义分组组件 -->
 <template>
   <div class="store-shelf">
     <shelf-title :title="shelfCategory.title"></shelf-title>

@@ -1,7 +1,7 @@
 <template>
   <div class="home-title-wrapper">
     <div class="label">{{label}}</div>
-    <div class="btn" @click="click">{{btn}}</div>
+    <div class="btn" @click="click" v-if="showCheckAll">{{btn}}</div>
   </div>
 </template>
 
@@ -9,7 +9,8 @@
 export default {
   props: {
     label: String,
-    btn: String
+    btn: String,
+    showCheckAll: { type: Boolean, default: true }
   },
   methods: {
     click () {
