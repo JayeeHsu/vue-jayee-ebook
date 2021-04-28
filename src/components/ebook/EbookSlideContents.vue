@@ -132,17 +132,19 @@ export default {
     /*
     * 全文搜索
     * @method doSearch
-    * @param {string} q 关键字
+    * @param {string} q 搜索关键字
     */
     doSearch (q) {
       return Promise.all(
         this.currentBook.spine.spineItems.map(
+          // spineItems用于管理章节下的所有文本内容
           section => section.load(
             this.currentBook.load.bind(this.currentBook)
           ).then(
             section.find.bind(section, q)
           ).finally(
             section.unload.bind(section)
+          // 释放内存
           )
         )
       ).then(results => Promise.resolve(
@@ -164,7 +166,7 @@ export default {
             this.searchList.map(item => {
               item.excerpt = item.excerpt.replace(this.searchText, `<span class="content-search-text">${this.searchText}</span>`)
               // 这里返回了一个span标签(html元素),用{{item.excerpt}}这种方法传值会自动解析为文本字符串,而不是一个html标签
-              // 所以在上面绑定v-html="item.excerpt",将内容作为html内容载入
+              // 所以在dom上面绑定v-html="item.excerpt",将内容作为html内容载入
               return item
             })
           })
