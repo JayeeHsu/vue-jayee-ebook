@@ -27,7 +27,7 @@
           <div class="content-author sub-title-medium">{{data ? data.author : ''}}</div>
           <div class="content-category">{{categoryText()}}</div>
         </div>
-        <div class="read-btn" @click.stop="showBookDetail(data)">{{$t('home.readNow')}}</div>
+        <div class="read-btn" @click.stop="showBookDetail(data)"  @click="close">{{$t('home.readNow')}}</div>
       </div>
     </div>
     <div class="close-btn-wrapper" >
@@ -278,16 +278,7 @@ export default {
       } else {
         return ''
       }
-    },
-
-    /*
-    * 点击立即阅读跳转至图书详情页
-    * @method showBookDetail
-    */
-    showBookDetail () {
-
     }
-
   },
   created () {
     this.pointList = []
@@ -369,7 +360,7 @@ export default {
       }
       .point-wrapper {
         z-index: 1500;
-        @include absCenter
+        @include absCenter;
         .point {
           border-radius: 50%; // 圆形
           @include absCenter;
