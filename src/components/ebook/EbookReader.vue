@@ -248,6 +248,7 @@ export default {
       this.rendition.on('touchend', event => {
         const offsetX = event.changedTouches[0].clientX - this.touchStartX // 触摸动作X轴偏移量
         const time = event.timeStamp - this.touchStartTime // 触摸时长
+        // 以下逻辑拖动像素判定逻辑已经弃用，改用蒙版+区域点击判断的方式
         if (offsetX > 40) {
           // 当触摸动作偏移量大于40像素
           this.prevPage() // 翻到上一页
@@ -322,7 +323,7 @@ export default {
           this.setMetadata(metadata)
         })
         this.book.loaded.navigation.then(nav => {
-          const navItem = flatten(nav.toc)
+          const navItem = flatten(nav.toc) // 数组扁平化
           function find (item, level = 0) {
             return !item.parent
               ? level
