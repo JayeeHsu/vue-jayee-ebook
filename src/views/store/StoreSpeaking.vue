@@ -532,6 +532,7 @@ export default {
     // 状态0 表示还未播放，所以需要先进行语音合成
     // 状态2 表示已经合成，所以直接进行播放即可
     togglePlay () {
+      console.log(this.playStatus, this.isPlaying)
       if (!this.isPlaying) {
         if (this.playStatus === 0) {
           this.play()
@@ -613,6 +614,7 @@ export default {
     // 当播放结束时，刷新播放信息
     onAudioEnded () {
       this.resetPlay()
+      console.log(this.$refs.audio)
       this.currentPlayingTime = this.$refs.audio.currentTime
       const percent = Math.floor((this.currentPlayingTime / this.totalPlayingTime) * 100)
       this.$refs.speakWindow.refreshProgress(percent)

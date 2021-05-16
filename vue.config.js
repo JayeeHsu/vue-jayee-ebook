@@ -29,10 +29,10 @@ module.exports = {
     performance: {
       // 将webpack 的性能提示设置为警告(而非错误)
       hints: 'warning',
-      // 入口起点的最大体积设置为512kb
-      maxAssetSize: 524288, // 512 * 1024
-      // 生成文件的最大体积设置为512kb
-      maxEntrypointSize: 524288
+      // 入口起点的最大体积设置为51200kb
+      maxAssetSize: 524288 * 10, // 512 * 1024 *10
+      // 生成文件的最大体积设置为51200kb
+      maxEntrypointSize: 524288 * 10
     }
   }
 }
